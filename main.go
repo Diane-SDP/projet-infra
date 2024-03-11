@@ -16,7 +16,7 @@ var buttonColor = "green"
 func main() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/ws", wsHandler)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
