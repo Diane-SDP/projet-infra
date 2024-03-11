@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"text/template"
 
 	"github.com/gorilla/websocket"
 )
@@ -20,16 +19,7 @@ func main() {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("./index.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = tmpl.Execute(w, nil)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	http.ServeFile(w, r, "index.html")
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
