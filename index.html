@@ -17,7 +17,7 @@
     <button id="colorButton" onclick="changeColor()">Change Color</button>
 
     <script>
-        var ws = new WebSocket("ws://82.67.64.82:80/ws");
+        var ws = new WebSocket("ws://0.0.0.0:80/ws");
 
         ws.onopen = function(event) {
             console.log("WebSocket connected.");
