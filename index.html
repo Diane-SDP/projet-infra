@@ -37,7 +37,11 @@
             // Mettre à jour la couleur localement
             button.style.backgroundColor = newColor;
         }
-
+        ws.onmessage = function(event) {
+            // Mettre à jour la couleur du bouton avec la couleur reçue du serveur
+            var button = document.getElementById('colorButton');
+            button.style.backgroundColor = event.data;
+        };
     </script>
 </body>
 </html>
