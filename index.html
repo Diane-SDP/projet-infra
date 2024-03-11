@@ -17,23 +17,25 @@
     <button id="colorButton" onclick="changeColor()">Change Color</button>
 
     <script>
+        var ws = new WebSocket("ws://localhost:8080/ws");
+
+        ws.onopen = function(event) {
+            console.log("WebSocket connected.");
+        };
+
+        ws.onerror = function(error) {
+            console.error('WebSocket Error:', error);
+        };
+
         function changeColor() {
-            // Envoi d'une requête au serveur Go pour changer la couleur
-            fetch('/changeColor', {
-                method: 'POST'
-            })
-            .then(response => response.text())
-            .then(message => console.log(message))
-            .catch(error => console.error('Erreur:', error));
-            
-            // Code pour changer la couleur du bouton côté client
             var button = document.getElementById('colorButton');
-            if (button.style.backgroundColor == 'red') {
-                button.style.backgroundColor = 'green';
-            } else {
-                button.style.backgroundColor = 'red';
-            }
+            var newColor = button.style.backgroundColor === 'green' ? 'red' : 'green';
             
+            // Envoyer la nouvelle couleur au serveur via WebSocket
+            ws.send(newColor);
+
+            // Mettre à jour la couleur localement
+            button.style.backgroundColor = newColor;
         }
     </script>
 </body>
