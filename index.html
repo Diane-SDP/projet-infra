@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bouton Multijoueur</title>
+    <style>
+        /* Ajoutez du CSS ici pour styliser votre bouton */
+        #colorButton {
+            width: 100px;
+            height: 50px;
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <button id="colorButton" onclick="changeColor()">Change Color</button>
+
+    <script>
+        function changeColor() {
+            // Envoi d'une requête au serveur Go pour changer la couleur
+            fetch('/changeColor', {
+                method: 'POST'
+            })
+            .then(response => response.text())
+            .then(message => console.log(message))
+            .catch(error => console.error('Erreur:', error));
+            
+            // Code pour changer la couleur du bouton côté client
+            var button = document.getElementById('colorButton');
+            if (button.style.backgroundColor == 'red') {
+                button.style.backgroundColor = 'green';
+            } else {
+                button.style.backgroundColor = 'red';
+            }
+            
+        }
+    </script>
+</body>
+</html>
