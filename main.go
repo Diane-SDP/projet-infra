@@ -46,6 +46,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		buttonColor = string(message)
 		log.Println("Message reçu:", message, "type de message : ", messageType)
 		log.Println(buttonColor)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		err = conn.WriteMessage(messageType, []byte(buttonColor))
 		if err := conn.WriteMessage(messageType, message); err != nil {
 			log.Println(err)
