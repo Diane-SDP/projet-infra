@@ -4,7 +4,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"slices"
 	"strings"
 	"text/template"
 
@@ -89,7 +88,7 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 		code = r.FormValue("code")
 		http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 	}
-	if !slices.Contains(listGame, code) {
+	if !Contains(listGame, code) {
 		http.Redirect(w, r, "/notfound", http.StatusSeeOther)
 	}
 
@@ -159,9 +158,18 @@ func CodeGene() string {
 		for i := 0; i < 5; i++ {
 			code += string(alphabet[rand.Intn(26)])
 		}
-		if slices.Contains(listGame, code) {
+		if Contains(listGame, code) {
 			fini = true
 		}
 	}
 	return code
+}
+
+func Contains(liste []string, code string) bool {
+	for i := 0; i < len(liste); i++ {
+		if liste[i] == code {
+			return true
+		}
+	}
+	return false
 }
