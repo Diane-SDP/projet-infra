@@ -17,10 +17,11 @@ var upgrader = websocket.Upgrader{
 }
 
 var (
-	buttonColor  = "green"
-	clients      = make(map[*websocket.Conn]bool)
-	broadcast    = make(chan []byte)
-	addClient    = make(chan *websocket.Conn)
+	buttonColor = "green"
+	clients     = make(map[*websocket.Conn]bool)
+	broadcast   = make(chan []byte)
+	addClient   = make(chan *websocket.Conn)
+
 	removeClient = make(chan *websocket.Conn)
 )
 
@@ -77,11 +78,8 @@ func bombHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
-	println("gigapute")
 	code := CodeGene()
-	println("turbopute")
 	listGame = append(listGame, code)
-	println("pute")
 	http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 }
 
