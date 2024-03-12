@@ -76,8 +76,11 @@ func bombHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
+	println("gigapute")
 	code := CodeGene()
+	println("turbopute")
 	listGame = append(listGame, code)
+	println("pute")
 	http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 }
 
@@ -154,12 +157,14 @@ func CodeGene() string {
 	alphabet := "azertyuiopqsdfghjklmwxcvbn"
 	var code string
 	var fini = false
-	for fini == false {
+	for !fini {
 		for i := 0; i < 5; i++ {
 			code += string(alphabet[rand.Intn(26)])
 		}
-		if Contains(listGame, code) {
+		println("truc")
+		if !Contains(listGame, code) {
 			fini = true
+			println("fini")
 		}
 	}
 	return code
