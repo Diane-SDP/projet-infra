@@ -16,6 +16,11 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+type Data struct {
+	Color string
+	Code  string
+}
+
 var (
 	buttonColor = "green"
 	clients     = make(map[*websocket.Conn]bool)
@@ -99,7 +104,10 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = tmpl.Execute(w, buttonColor)
+	var data Data
+	data.Code = code
+	data.Color = buttonColor
+	err = tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
