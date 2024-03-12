@@ -149,7 +149,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	// Récupérer le code de jeu depuis l'URL
+	// Obtenez le code de jeu à partir de l'URL
 	parts := strings.Split(r.URL.Path, "/")
 	code := parts[len(parts)-1]
 
