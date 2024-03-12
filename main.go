@@ -23,6 +23,10 @@ var (
 	addClient    = make(chan *websocket.Conn)
 	removeClient = make(chan *websocket.Conn)
 )
+var gameClients = make(map[string]map[*websocket.Conn]bool)
+var gameBroadcast = make(map[string]chan []byte)
+var gameAddClient = make(chan *websocket.Conn)
+var gameRemoveClient = make(chan *websocket.Conn)
 
 var listGame []string
 
@@ -35,6 +39,13 @@ func main() {
 	http.HandleFunc("/notfound", notfoundHandler)
 	go handleMessages()
 	http.ListenAndServe(":8080", nil)
+
+	// Initialiser la gestion des messages pour chaque jeu créé
+	for _, code := range listGame {
+		gameClients[code] = make(map[*websocket.Conn]bool)
+		gameBroadcast[code] = make(chan []byte)
+		go handleGameMessages(code)
+	}
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -49,6 +60,30 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func handleGameMessages(code string) {
+	for {
+		select {
+		case message := <-gameBroadcast[code]:
+			clients := gameClients[code]
+			for client := range clients {
+				err := client.WriteMessage(websocket.TextMessage, message)
+				if err != nil {
+					log.Println("Error sending message to client:", err)
+					client.Close()
+					delete(clients, client)
+				}
+			}
+		case client := <-gameAddClient:
+			clients := gameClients[code]
+			clients[client] = true
+		case client := <-gameRemoveClient:
+			clients := gameClients[code]
+			delete(clients, client)
+		}
+	}
+}
+
 func notfoundHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("notfound.html")
 	if err != nil {
@@ -106,7 +141,6 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -115,21 +149,23 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	clients[conn] = true
-	addClient <- conn
+	// Récupérer le code de jeu depuis l'URL
+	parts := strings.Split(r.URL.Path, "/")
+	code := parts[len(parts)-1]
+
+	// Ajouter la connexion WebSocket au jeu correspondant
+	gameAddClient <- conn
+	defer func() { gameRemoveClient <- conn }()
 
 	for {
-		messageType, message, err := conn.ReadMessage()
+		_, message, err := conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
-			removeClient <- conn
 			return
 		}
 
-		buttonColor = string(message)
-		log.Println("Message reçu:", message, "type de message : ", messageType)
-		log.Println(buttonColor)
-		broadcast <- message
+		// Diffuser le message uniquement au jeu correspondant
+		gameBroadcast[code] <- message
 	}
 }
 
