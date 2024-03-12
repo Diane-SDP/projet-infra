@@ -14,7 +14,8 @@
 </head>
 <body>
     <button id="colorButton" onclick="changeColor()">Change Color</button>
-
+    <h1>{{.}}</h1>
+    <input type="hidden" value="{{.}}">
     <script>
         var ws = new WebSocket("ws://82.67.64.82:80/ws");
 

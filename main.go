@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"text/template"
 
 	"github.com/gorilla/websocket"
 )
@@ -20,7 +21,11 @@ func main() {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "index.html")
+	tmpl, err := template.ParseFiles("index.html")
+	err = tmpl.Execute(w, buttonColor)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
@@ -37,8 +42,10 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			return
 		}
-		log.Println("Message reçu:", message, "type de message : ", messageType)
+
 		buttonColor = string(message)
+		log.Println("Message reçu:", message, "type de message : ", messageType)
+		log.Println(buttonColor)
 		err = conn.WriteMessage(messageType, []byte(buttonColor))
 		if err := conn.WriteMessage(messageType, message); err != nil {
 			log.Println(err)
