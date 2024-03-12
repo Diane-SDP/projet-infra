@@ -2,12 +2,16 @@ package main
 
 import (
 	"log"
+	"math/rand"
 	"net/http"
+	"slices"
+	"strings"
 	"text/template"
 
 	"github.com/gorilla/websocket"
 )
 
+// défini la taille des msg en octets
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -21,14 +25,74 @@ var (
 	removeClient = make(chan *websocket.Conn)
 )
 
+var listGame []string
+
 func main() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/ws", wsHandler)
+	http.HandleFunc("/BombGame", bombHandler)
+	http.HandleFunc("/game/", gameHandler)
+	http.HandleFunc("/create", createHandler)
+	http.HandleFunc("/notfound", notfoundHandler)
 	go handleMessages()
 	http.ListenAndServe(":8080", nil)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("home.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = tmpl.Execute(w, buttonColor)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+func notfoundHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("notfound.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func bombHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("bomba.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = tmpl.Execute(w, buttonColor)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func createHandler(w http.ResponseWriter, r *http.Request) {
+	code := CodeGene()
+	listGame = append(listGame, code)
+	http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
+}
+
+func gameHandler(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	code := parts[len(parts)-1]
+	if code == "" {
+		code = r.FormValue("code")
+		http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
+	}
+	if !slices.Contains(listGame, code) {
+		http.Redirect(w, r, "/notfound", http.StatusSeeOther)
+	}
+
 	tmpl, err := template.ParseFiles("index.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -73,7 +137,6 @@ func handleMessages() {
 		case message := <-broadcast:
 			for client := range clients {
 				err := client.WriteMessage(websocket.TextMessage, message)
-				println("message broadcast ", message)
 				if err != nil {
 					log.Println("Error sending message to client:", err)
 					client.Close()
@@ -86,4 +149,19 @@ func handleMessages() {
 			delete(clients, client)
 		}
 	}
+}
+
+func CodeGene() string {
+	alphabet := "azertyuiopqsdfghjklmwxcvbn"
+	var code string
+	var fini = false
+	for fini == false {
+		for i := 0; i < 5; i++ {
+			code += string(alphabet[rand.Intn(26)])
+		}
+		if slices.Contains(listGame, code) {
+			fini = true
+		}
+	}
+	return code
 }
