@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bouton Multijoueur</title>
+    <link href="/style.css" rel="stylesheet">
     <style>
         #colorButton {
             width: 100px;
@@ -19,6 +20,24 @@
     <h2 id="jscolor"></h2>
     <input id="getcolor" type="hidden" value=" {{.ButtonColor}}">
     <input id="getcode" type="hidden" value=" {{.Code}}">
+    <div>
+        <div>
+            <button></button>
+            <button></button>
+            <button></button>
+        </div>
+        <div>
+            <button>.</button>
+            <button>.</button>
+            <button>.</button>
+        </div>
+        <div style>
+            <button></button>
+            <button></button>
+            <button></button>
+        </div>
+    </div>
+
     <script>
         var ws = new WebSocket("ws://82.67.64.82:80/ws");
         var color = document.getElementById("jscolor")
