@@ -21,10 +21,11 @@ var (
 	clients     = make(map[*websocket.Conn]bool)
 	broadcast   = make(chan []byte)
 	addClient   = make(chan *websocket.Conn)
-
 	removeClient = make(chan *websocket.Conn)
+
 )
 
+var codeToPC map[string][]*websocket.Conn
 var listGame []string
 
 func main() {
@@ -93,7 +94,7 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 	if !Contains(listGame, code) {
 		http.Redirect(w, r, "/notfound", http.StatusSeeOther)
 	}
-
+	codeToPC[code] = 
 	tmpl, err := template.ParseFiles("index.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
