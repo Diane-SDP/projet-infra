@@ -26,6 +26,11 @@ var (
 
 var listGame []string
 
+type Data struct {
+	ButtonColor string
+	Code        string
+}
+
 func main() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/ws", wsHandler)
@@ -95,13 +100,15 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 	if !Contains(listGame, code) {
 		http.Redirect(w, r, "/notfound", http.StatusSeeOther)
 	}
-
+	var data Data
+	data.ButtonColor = buttonColor
+	data.Code = code
 	tmpl, err := template.ParseFiles("index.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = tmpl.Execute(w, buttonColor)
+	err = tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
