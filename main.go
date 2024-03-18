@@ -84,7 +84,7 @@ func bombHandler(w http.ResponseWriter, r *http.Request) {
 func createHandler(w http.ResponseWriter, r *http.Request) {
 	code := CodeGene()
 	listGame = append(listGame, code)
-	println("ouije")
+	println("nonje")
 	http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 }
 
