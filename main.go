@@ -32,6 +32,8 @@ type Data struct {
 }
 
 func main() {
+	fs := http.FileServer(http.Dir("assets/"))
+	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/ws", wsHandler)
 	http.HandleFunc("/BombGame", bombHandler)
