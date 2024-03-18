@@ -24,6 +24,8 @@
         var color = document.getElementById("jscolor")
         var getcolor = document.getElementById("getcolor")
         var getcode = document.getElementById("getcode")
+        var urlcourante = document.location.href;
+        var currentCode = urlcourante.split("/")[2]
         ws.onopen = function(event) {
             console.log("WebSocket connected.");
         };
@@ -43,9 +45,13 @@
         }
         ws.onmessage = function(event) {
             var button = document.getElementById('colorButton');
-            console.log("recup :",event.data)
-            color.innerText = (event.data)
-            button.style.backgroundColor = event.data;
+            var coderecu = str.split('|')[1].substring(1);
+            var couleur = str.split('|')[0]
+            if (coderecu == currentCode) {
+                console.log("recup :",event.data)
+                color.innerText = (event.data)
+                button.style.backgroundColor = event.data;
+            }  
         };
         ws.onclose = function(event) {
             console.log("websocket closed")
