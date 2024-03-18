@@ -45,8 +45,8 @@
         }
         ws.onmessage = function(event) {
             var button = document.getElementById('colorButton');
-            var coderecu = str.split('|')[1].substring(1);
-            var couleur = str.split('|')[0]
+            var coderecu = event.data.split('|')[1].substring(1);
+            var couleur = event.data.split('|')[0]
             if (coderecu == currentCode) {
                 console.log("recup :",event.data)
                 color.innerText = (event.data)
