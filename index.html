@@ -47,6 +47,8 @@
             var button = document.getElementById('colorButton');
             var coderecu = event.data.split('|')[1].substring(1);
             var couleur = event.data.split('|')[0]
+            console.log("currentcode", currentCode)
+            console.log("code recu", coderecu)
             if (coderecu == currentCode) {
                 console.log("recup :",event.data)
                 color.innerText = (event.data)
