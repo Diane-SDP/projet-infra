@@ -14,70 +14,29 @@
     </style>
 </head>
 <body>
-    <button id="colorButton" onclick="changeColor()">Change Color</button>
+    <button id="colorButton" onclick="changeColor(this)">Change Color</button>
     <h1>golang : {{.ButtonColor}}</h1>
-    <h1>js :</h1>
+    <h1 id="statut">Début</h1>
     <h2 id="jscolor"></h2>
     <input id="getcolor" type="hidden" value=" {{.ButtonColor}}">
     <input id="getcode" type="hidden" value=" {{.Code}}">
     <div>
         <div>
-            <button id="1" class="morpion"></button>
-            <button id="2" class="morpion"></button>
-            <button id="3" class="morpion"></button>
+            <button id="1" class="morpion"onclick="Morpion(this)"></button>
+            <button id="2" class="morpion"onclick="Morpion(this)"></button>
+            <button id="3" class="morpion"onclick="Morpion(this)"></button>
         </div>
         <div>
-            <button id="4" class="morpion">.</button>
-            <button id="5" class="morpion">.</button>
-            <button id="6" class="morpion">.</button>
+            <button id="4" class="morpion"onclick="Morpion(this)"></button>
+            <button id="5" class="morpion"onclick="Morpion(this)"></button>
+            <button id="6" class="morpion"onclick="Morpion(this)"></button>
         </div>
         <div>
-            <button id="7" class="morpion"></button>
-            <button id="8" class="morpion"></button>
-            <button id="9" class="morpion"></button>
+            <button id="7" class="morpion"onclick="Morpion(this)"></button>
+            <button id="8" class="morpion"onclick="Morpion(this)"></button>
+            <button id="9" class="morpion"onclick="Morpion(this)"></button>
         </div>
     </div>
-
-    <script>
-        var ws = new WebSocket("ws://82.67.64.82:80/ws");
-        var color = document.getElementById("jscolor")
-        var getcolor = document.getElementById("getcolor")
-        var getcode = document.getElementById("getcode")
-        var urlcourante = document.location.href;
-        var currentCode = urlcourante.split("/")[4]
-        ws.onopen = function(event) {
-            console.log("WebSocket connected.");
-        };
-
-        ws.onerror = function(error) {
-            console.error('WebSocket Error:', error);
-        };
-
-        function changeColor() {
-            var button = document.getElementById('colorButton');
-            var newColor = button.style.backgroundColor === 'green' ? 'red' : 'green';
-            console.log("tient :",newColor)
-            ws.send(newColor + "|" + getcode.value);
-            console.log("hidden input",getcolor.value)
-            console.log("pute",getcode.value)
-            button.style.backgroundColor = newColor;
-        }
-        ws.onmessage = function(event) {
-            var button = document.getElementById('colorButton');
-            var coderecu = event.data.split('|')[1].substring(1);
-            var couleur = event.data.split('|')[0]
-            console.log("currentcode", currentCode)
-            console.log("code recu", coderecu)
-            if (coderecu == currentCode) {
-                console.log("recup :",event.data)
-                color.innerText = (couleur)
-                button.style.backgroundColor = couleur;
-
-            }  
-        };
-        ws.onclose = function(event) {
-            console.log("websocket closed")
-        }
-    </script>
 </body>
+<script src="/assets/script.js"></script>
 </html>
