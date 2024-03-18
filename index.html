@@ -14,12 +14,12 @@
 </head>
 <body>
     <button id="colorButton" onclick="changeColor()">Change Color</button>
-    <h1>golang : {{.Color}}</h1>
+    <h1>golang : {{.}}</h1>
     <h1>js :</h1>
     <h2 id="jscolor"></h2>
-    <input id="getcolor" type="hidden" value="{{.Color}}">
+    <input id="getcolor" type="hidden" value="{{.}}">
     <script>
-        var ws = new WebSocket("ws://82.67.64.82:8080/ws?room={{.Code}}");
+        var ws = new WebSocket("ws://82.67.64.82:80/ws?room={{.}}");
         var color = document.getElementById("jscolor")
         var getcolor = document.getElementById("getcolor")
         ws.onopen = function(event) {
