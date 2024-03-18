@@ -25,7 +25,7 @@
         var getcolor = document.getElementById("getcolor")
         var getcode = document.getElementById("getcode")
         var urlcourante = document.location.href;
-        var currentCode = urlcourante.split("/")[2]
+        var currentCode = urlcourante.split("/")[4]
         ws.onopen = function(event) {
             console.log("WebSocket connected.");
         };
