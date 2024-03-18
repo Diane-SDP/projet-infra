@@ -82,11 +82,9 @@ func bombHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
-	println("gigapute")
 	code := CodeGene()
-	println("turbopute")
 	listGame = append(listGame, code)
-	println("pute")
+	println("grosse pute")
 	http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 }
 
