@@ -51,8 +51,9 @@
             console.log("code recu", coderecu)
             if (coderecu == currentCode) {
                 console.log("recup :",event.data)
-                color.innerText = (event.data)
-                button.style.backgroundColor = event.data;
+                color.innerText = (couleur)
+                button.style.backgroundColor = couleur;
+
             }  
         };
         ws.onclose = function(event) {
