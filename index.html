@@ -36,7 +36,7 @@
             var button = document.getElementById('colorButton');
             var newColor = button.style.backgroundColor === 'green' ? 'red' : 'green';
             console.log("tient :",newColor)
-            ws.send(newColor, getcode.value);
+            ws.send(newColor + "|" + getcode.value);
             console.log("hidden input",getcolor.value)
             console.log("pute",getcode.value)
             button.style.backgroundColor = newColor;
