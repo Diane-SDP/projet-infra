@@ -1,19 +1,18 @@
 package main
 
 import (
-	"log"
-	"math/rand"
-	"net/http"
-	"strings"
-	"text/template"
+    "log"
+    "math/rand"
+    "net/http"
+    "strings"
+    "text/template"
 
-	"github.com/gorilla/websocket"
+    "github.com/gorilla/websocket"
 )
 
-// défini la taille des msg en octets
 var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
+    ReadBufferSize:  1024,
+    WriteBufferSize: 1024,
 }
 
 var (
@@ -27,154 +26,145 @@ var (
 
 var codeToPC map[string][]*websocket.Conn
 var listGame []string
+type Room struct {
+    ID       string
+    Clients  map[*websocket.Conn]bool
+    Broadcast chan []byte
+}
+
+var Rooms map[string]*Room
 
 func main() {
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/ws", wsHandler)
-	http.HandleFunc("/BombGame", bombHandler)
-	http.HandleFunc("/game/", gameHandler)
-	http.HandleFunc("/create", createHandler)
-	http.HandleFunc("/notfound", notfoundHandler)
-	go handleMessages()
-	http.ListenAndServe(":8080", nil)
+    Rooms = make(map[string]*Room)
+    http.HandleFunc("/", homeHandler)
+    http.HandleFunc("/ws", wsHandler)
+    http.HandleFunc("/game/", gameHandler)
+    http.HandleFunc("/create", createHandler)
+    http.HandleFunc("/notfound", notfoundHandler)
+    go handleMessages()
+    http.ListenAndServe(":8080", nil)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("home.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = tmpl.Execute(w, buttonColor)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+    tmpl, err := template.ParseFiles("home.html")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    err = tmpl.Execute(w, nil)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
 }
 
 func notfoundHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("notfound.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = tmpl.Execute(w, nil)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
-func bombHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("bomba.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = tmpl.Execute(w, buttonColor)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+    tmpl, err := template.ParseFiles("notfound.html")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    err = tmpl.Execute(w, nil)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
 }
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
-	code := CodeGene()
-	listGame = append(listGame, code)
-	http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
+    code := CodeGene()
+    Rooms[code] = &Room{
+        ID:       code,
+        Clients:  make(map[*websocket.Conn]bool),
+        Broadcast: make(chan []byte),
+    }
+    http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
-	parts := strings.Split(r.URL.Path, "/")
-	code := parts[len(parts)-1]
-	if code == "" {
-		code = r.FormValue("code")
-		http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
-	}
-	if !Contains(listGame, code) {
-		http.Redirect(w, r, "/notfound", http.StatusSeeOther)
-	}
-	codeToPC[code] = 
-	tmpl, err := template.ParseFiles("index.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = tmpl.Execute(w, buttonColor)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+    parts := strings.Split(r.URL.Path, "/")
+    code := parts[len(parts)-1]
+    if code == "" {
+        code = r.FormValue("code")
+        http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
+    }
+    if _, ok := Rooms[code]; !ok {
+        http.Redirect(w, r, "/notfound", http.StatusSeeOther)
+    }
+
+    tmpl, err := template.ParseFiles("index.html")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    err = tmpl.Execute(w, code)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer conn.Close()
+    roomID := r.URL.Query().Get("room")
+    room, ok := Rooms[roomID]
+    if !ok {
+        http.Error(w, "Room not found", http.StatusNotFound)
+        return
+    }
 
-	clients[conn] = true
-	addClient <- conn
+    conn, err := upgrader.Upgrade(w, r, nil)
+    if err != nil {
+        log.Println(err)
+        return
+    }
+    defer conn.Close()
 
-	for {
-		messageType, message, err := conn.ReadMessage()
-		if err != nil {
-			log.Println(err)
-			removeClient <- conn
-			return
-		}
+    room.Clients[conn] = true
 
-		buttonColor = string(message)
-		log.Println("Message reçu:", message, "type de message : ", messageType)
-		log.Println(buttonColor)
-		broadcast <- message
-	}
+    for {
+        messageType, message, err := conn.ReadMessage()
+        if err != nil {
+            log.Println(err)
+            delete(room.Clients, conn)
+            return
+        }
+
+        log.Println("Message reçu:", message, "type de message : ", messageType)
+        room.Broadcast <- message
+    }
 }
 
 func handleMessages() {
-	for {
-		select {
-		case message := <-broadcast:
-			for client := range clients {
-				err := client.WriteMessage(websocket.TextMessage, message)
-				if err != nil {
-					log.Println("Error sending message to client:", err)
-					client.Close()
-					delete(clients, client)
-				}
-			}
-		case client := <-addClient:
-			clients[client] = true
-		case client := <-removeClient:
-			delete(clients, client)
-		}
-	}
+    for _, room := range Rooms {
+        go func(room *Room) {
+            for {
+                select {
+                case message := <-room.Broadcast:
+                    for client := range room.Clients {
+                        err := client.WriteMessage(websocket.TextMessage, message)
+                        if err != nil {
+                            log.Println("Error sending message to client:", err)
+                            client.Close()
+                            delete(room.Clients, client)
+                        }
+                    }
+                }
+            }
+        }(room)
+    }
 }
 
 func CodeGene() string {
-	alphabet := "azertyuiopqsdfghjklmwxcvbn"
-	var code string
-	var fini = false
-	for !fini {
-		for i := 0; i < 5; i++ {
-			code += string(alphabet[rand.Intn(26)])
-		}
-		println("truc")
-		if !Contains(listGame, code) {
-			fini = true
-			println("fini")
-		}
-	}
-	return code
-}
-
-func Contains(liste []string, code string) bool {
-	for i := 0; i < len(liste); i++ {
-		if liste[i] == code {
-			return true
-		}
-	}
-	return false
+    alphabet := "azertyuiopqsdfghjklmwxcvbn"
+    var code string
+    var fini = false
+    for !fini {
+        for i := 0; i < 5; i++ {
+            code += string(alphabet[rand.Intn(26)])
+        }
+        if _, exists := Rooms[code]; !exists {
+            fini = true
+        }
+    }
+    return code
 }
