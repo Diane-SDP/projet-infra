@@ -49,9 +49,11 @@ function Win(symb) {
 
 function Egalite(){
     Egalite = true
-    for(var i = 0 ; i < 9 ; i++){
-        if(document.getElementById(i).innerText == ""){
-            Egalite = false
+    for(var i = 0 ; i < 3 ; i++){
+        for(var j = 0 ; j < 3 ; j++){
+            if(buttons[i][j].innerText == ""){
+                Egalite = false
+            }
         }
     }
     if (Egalite){
@@ -72,7 +74,7 @@ function Morpion(nEvent){
                 statut.textContent = "tour du j1"
             }
             
-        }else if (droitdejouer){
+        } else if (droitdejouer){
             droitdejouer = false
             currentbtn.innerText = "0"
             ws.send(getcode.value+"|"+true);
