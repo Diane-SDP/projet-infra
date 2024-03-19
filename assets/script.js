@@ -29,19 +29,19 @@ ws.onerror = function(error) {
         
 function Win(symb) {
     for(var i = 0 ; i < 3 ; i++){
-        if (buttons[i][0] == symb && buttons[i][1] == symb && buttons[i][2] == symb) {
+        if (buttons[i][0].innerText == symb && buttons[i][1].innerText == symb && buttons[i][2].innerText == symb) {
             return true;
         }
     }
 	for (var col = 0; col < 3;col++) {
-		if (buttons[0][col] == symb && buttons[1][col] == symb && buttons[2][col] == symb) {
+		if (buttons[0][col].innerText == symb && buttons[1][col].innerText == symb && buttons[2][col].innerText == symb) {
 			return true;
 		}
 	}
-	if (buttons[0][0] == symb && buttons[1][1] == symb && buttons[2][2] == symb) {
+	if (buttons[0][0].innerText == symb && buttons[1][1].innerText == symb && buttons[2][2].innerText == symb) {
 		return true;
 	}
-	if (buttons[0][2] == symb && buttons[1][1] == symb && buttons[2][0] == symb) {
+	if (buttons[0][2].innerText == symb && buttons[1][1].innerText == symb && buttons[2][0].innerText == symb) {
 		return true;
 	}
 }
