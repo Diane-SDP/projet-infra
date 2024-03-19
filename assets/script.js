@@ -48,15 +48,15 @@ function Win(symb) {
      
 
 function Egalite(){
-    Egalite = true
+    Draw = true
     for(var i = 0 ; i < 3 ; i++){
         for(var j = 0 ; j < 3 ; j++){
             if(buttons[i][j].innerText == ""){
-                Egalite = false
+                Draw = false
             }
         }
     }
-    if (Egalite){
+    if (Draw){
         statut.textContent = "Egalité sale merde"  
     }   
 }
@@ -77,7 +77,7 @@ function Morpion(nEvent){
         } else if (droitdejouer){
             droitdejouer = false
             currentbtn.innerText = "0"
-            ws.send(getcode.value+"|"+true);
+            ws.send(getcode.value+"|"+true+"|",);
             if (Win("O")) {
                 statut.textContent = "Le joueur O a gagné"
             } else {
