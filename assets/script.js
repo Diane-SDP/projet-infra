@@ -113,7 +113,7 @@ ws.onmessage = function(event) {
             document.getElementById(casecoche).innerText = "X"
         } else {
             tour = true
-            document.getElementById(casecoche).innerText = "X"
+            document.getElementById(casecoche).innerText = "O"
         }
         droitdejouer = true
     }  
