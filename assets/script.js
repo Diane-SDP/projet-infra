@@ -67,7 +67,7 @@ function Morpion(nEvent){
         if (tour && droitdejouer){
             droitdejouer = false
             currentbtn.innerText = "X"
-            ws.send(getcode.value+"|"+"false"+"|",nEvent.id);
+            ws.send(getcode.value+"|"+"false"+"|"+ nEvent.id);
             if (Win("X")) {
                 statut.textContent = "Le joueur X a gagné"
             } else {
@@ -77,7 +77,7 @@ function Morpion(nEvent){
         } else if (droitdejouer){
             droitdejouer = false
             currentbtn.innerText = "0"
-            ws.send(getcode.value+"|"+"true"+"|",nEvent.id);
+            ws.send(getcode.value+"|"+"true"+"|" + nEvent.id);
             if (Win("O")) {
                 statut.textContent = "Le joueur O a gagné"
             } else {
@@ -105,12 +105,15 @@ ws.onmessage = function(event) {
     var button = document.getElementById('colorButton');
     var coderecu = event.data.split('|')[0].substring(1);
     var tourrecu = event.data.split('|')[1]
+    var casecoche = event.data.split('|')[2]
     if (coderecu == currentCode) {
         console.log("recup :",event.data)
         if (tourrecu == "false") {
             tour = false
+            document.getElementById(casecoche).innerText = "X"
         } else {
             tour = true
+            document.getElementById(casecoche).innerText = "X"
         }
         droitdejouer = true
     }  
