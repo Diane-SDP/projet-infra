@@ -14,16 +14,14 @@
 </head>
 <body>
     <button id="colorButton" onclick="changeColor()">Change Color</button>
-    <h1>golang : {{.ButtonColor}}</h1>
+    <h1>golang : {{.}}</h1>
     <h1>js :</h1>
     <h2 id="jscolor"></h2>
-    <input id="getcolor" type="hidden" value=" {{.ButtonColor}}">
-    <input id="getcode" type="hidden" value=" {{.Code}}">
+    <input id="getcolor" type="hidden" value="{{.}}">
     <script>
-        var ws = new WebSocket("ws://82.67.64.82:80/ws");
+        var ws = new WebSocket("ws://82.67.64.82:80/ws?room={{.}}");
         var color = document.getElementById("jscolor")
         var getcolor = document.getElementById("getcolor")
-        var getcode = document.getElementById("getcode")
         ws.onopen = function(event) {
             console.log("WebSocket connected.");
         };
@@ -36,16 +34,13 @@
             var button = document.getElementById('colorButton');
             var newColor = button.style.backgroundColor === 'green' ? 'red' : 'green';
             console.log("tient :",newColor)
-            ws.send(newColor + "|" + getcode.value);
+            ws.send(newColor);
             console.log("hidden input",getcolor.value)
-            console.log("pute",getcode.value)
             button.style.backgroundColor = newColor;
         }
         ws.onmessage = function(event) {
             var button = document.getElementById('colorButton');
             console.log("recup :",event.data)
-            var coderecu = event.data.split('|')[1].substring(1);
-            var couleur = event.data.split('|')[0]
             color.innerText = (event.data)
             button.style.backgroundColor = event.data;
         };
