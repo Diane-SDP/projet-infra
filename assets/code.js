@@ -12,7 +12,9 @@ ws.onerror = function(error) {
 function changeColor() {
     var button = document.getElementById('colorButton');
     var newColor = button.style.backgroundColor === 'green' ? 'red' : 'green';
+    console.log("tient :",newColor)
     ws.send(newColor);
+    console.log("hidden input",getcolor.value)
     button.style.backgroundColor = newColor;
 }
 ws.onmessage = function(event) {
@@ -20,7 +22,7 @@ ws.onmessage = function(event) {
     console.log("recup :",event.data)
     color.innerText = (event.data)
     button.style.backgroundColor = event.data;
-};
+    };
 ws.onclose = function(event) {
     console.log("websocket closed")
 }
