@@ -136,11 +136,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
-	println("kefrioguergeirug ouije pute")
+	log.Println("kefrioguergeirug ouije pute")
 	clients[conn] = true
 	addClient <- conn
 	for {
-		println("allez ça part")
+		log.Println("allez ça part")
 		messageType, message, err := conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
