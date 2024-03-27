@@ -1,6 +1,8 @@
 var ws = new WebSocket("ws://82.67.64.82:80/ws");
 var color = document.getElementById("jscolor")
-var getcolor = document.getElementById("getcolor")
+var getcolor = document.getElementById("getcolor").value
+var getpseudo = document.getElementById("getpseudo").value
+var getcode = document.getElementById("getcode").value
 ws.onopen = function(event) {
     console.log("WebSocket connected.");
 };
@@ -13,8 +15,8 @@ function changeColor() {
     var button = document.getElementById('colorButton');
     var newColor = button.style.backgroundColor === 'green' ? 'red' : 'green';
     console.log("tient :",newColor)
-    ws.send(newColor);
-    console.log("hidden input",getcolor.value)
+    ws.send(newColor+"|"+ getpseudo + "|" + getcode)
+    console.log("hidden input",getcolor)
     button.style.backgroundColor = newColor;
 }
 ws.onmessage = function(event) {

@@ -92,6 +92,14 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	room.Couleur = buttonColor
 	room.Code = code
 	LesRooms = append(LesRooms, room)
+	http.SetCookie(w, &http.Cookie{
+		Name:  "room",
+		Value: code,
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:  "pseudo",
+		Value: pseudo,
+	})
 	http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 }
 
@@ -104,6 +112,14 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 		if code == "" {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
+		http.SetCookie(w, &http.Cookie{
+			Name:  "room",
+			Value: code,
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:  "pseudo",
+			Value: pseudo,
+		})
 		http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 	}
 	if !Contains(listGame, code) {
@@ -112,10 +128,12 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 	type Data struct {
 		Color  string
 		Pseudo string
+		Code   string
 	}
 	var data Data
 	data.Pseudo = pseudo
 	data.Color = buttonColor
+	data.Code = code
 
 	tmpl, err := template.ParseFiles("index.html")
 	if err != nil {
@@ -131,14 +149,16 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
+	log.Println("conn : ", conn)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer conn.Close()
-	log.Println("kefrioguergeirug ouije pute")
+	log.Println("ouije pute")
 	clients[conn] = true
 	addClient <- conn
+
 	for {
 		log.Println("allez ça part")
 		messageType, message, err := conn.ReadMessage()
@@ -149,7 +169,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		buttonColor = string(message)
-		print(buttonColor)
 		log.Println("Message reçu:", message, "type de message : ", messageType)
 		log.Println(buttonColor)
 		broadcast <- message
