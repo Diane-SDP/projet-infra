@@ -15,8 +15,9 @@ function changeColor() {
     var button = document.getElementById('colorButton');
     var newColor = button.style.backgroundColor === 'green' ? 'red' : 'green';
     console.log("tient :",newColor)
-    ws.send(newColor+"|"+ getpseudo + "|" + getcode)
-    console.log("hidden input",getcolor)
+    var message = newColor+"|"+ getpseudo + "|" + getcode
+    ws.send(message)
+    console.log("message send : ",message)
     button.style.backgroundColor = newColor;
 }
 ws.onmessage = function(event) {

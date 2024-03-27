@@ -180,7 +180,11 @@ func handleMessages() {
 		select {
 		case message := <-broadcast:
 			for client := range clients {
-
+				
+				//on recupere le cookie
+				//on verifie si la salle qu'on a eu dans le message correspond au cookie code 
+				//si oui on envoie le message 
+				//si non on fait un petit print pour verifier (hassoul)
 				err := client.WriteMessage(websocket.TextMessage, message)
 				if err != nil {
 					log.Println("Error sending message to client:", err)
