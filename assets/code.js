@@ -29,8 +29,8 @@ ws.onmessage = function(event) {
         console.log("cookie créer avec l'uid : ",uid)
     } else {
         console.log("ça c'est une couleur : ")
-        color.innerText = (event.data)
-        button.style.backgroundColor = event.data;
+        color.innerText = (event.data.split("|")[0])
+        button.style.backgroundColor = event.data.split("|")[0];
     }
     };
 ws.onclose = function(event) {
