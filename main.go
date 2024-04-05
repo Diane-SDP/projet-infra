@@ -106,6 +106,7 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	room.Couleur = buttonColor
 	room.Code = code
 	LesRooms = append(LesRooms, room)
+	AllPlayer = append(AllPlayer, joueur)
 	http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 }
 
@@ -167,15 +168,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error sending uid to client:", err)
 		return
 	}
-
-
-	joueur := Joueur{
-	Uid: uid,
-	Pseudo: "",
-	Client: conn,
-	}
-	AllPlayer = append(AllPlayer, joueur)
-
 
 	defer conn.Close()
 	log.Println("ouije pute")
