@@ -170,13 +170,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer conn.Close()
-	log.Println("ouije pute")
 	clients[conn] = true
 	addClient <- conn
 
 	for {
-		log.Println("allez ça part")
-		messageType, message, err := conn.ReadMessage()
+		_, message, err := conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
 			removeClient <- conn
@@ -184,8 +182,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		buttonColor = string(message)
-		log.Println("Message reçu:", message, "type de message : ", messageType)
-		log.Println(buttonColor)
 		broadcast <- message
 	}
 }
@@ -245,10 +241,8 @@ func CodeGene() string {
 		for i := 0; i < 5; i++ {
 			code += string(alphabet[rand.Intn(26)])
 		}
-		println("truc")
 		if !Contains(listGame, code) {
 			fini = true
-			println("fini")
 		}
 	}
 	return code
