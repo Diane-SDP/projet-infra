@@ -87,6 +87,7 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("uid")
 	var uid string
 	if err != nil {
+		panic(err)
 		uid = ""
 	} else {
 		uid = cookie.Value
