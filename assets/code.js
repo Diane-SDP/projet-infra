@@ -5,11 +5,6 @@ var getpseudo = document.getElementById("getpseudo").value
 var getcode = document.getElementById("getcode").value
 ws.onopen = function(event) {
     console.log("WebSocket connected.");
-    socket.onmessage = function (event) {
-        var uid = event.data;
-        // Set a cookie with the received unique identifier
-        document.cookie = "uid=" + uid + ";path=/";
-    };
 };
 
 ws.onerror = function(error) {
@@ -28,8 +23,14 @@ function changeColor() {
 ws.onmessage = function(event) {
     var button = document.getElementById('colorButton');
     console.log("recup :",event.data)
-    color.innerText = (event.data)
-    button.style.backgroundColor = event.data;
+    if (event.data != "green" && event.data != "red") {
+        var uid = event.data;
+        document.cookie = "uid=" + uid + ";path=/";
+        console.log("cookie créer avec l'uid : ",uid)
+    } else {
+        color.innerText = (event.data)
+        button.style.backgroundColor = event.data;
+    }
     };
 ws.onclose = function(event) {
     console.log("websocket closed")
