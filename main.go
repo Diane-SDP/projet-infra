@@ -97,6 +97,12 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("uid")
+	if err != nil {
+		println("cookie inexistant")
+	} else {
+		println("cookie avec valeur : ",cookie)
+	}
 	parts := strings.Split(r.URL.Path, "/")
 	code := parts[len(parts)-1]
 	if code == "" {
@@ -147,6 +153,12 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		Value: uid,
 	})
 	println("cookie créer avec l'uid : ",uid)
+	cookie, err := r.Cookie("uid")
+	if err != nil {
+		println("cookie inexistant")
+	} else {
+		println("cookie avec valeur : ",cookie)
+	}
 	if err != nil {
 		log.Println(err)
 		return
