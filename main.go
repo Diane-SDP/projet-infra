@@ -31,7 +31,7 @@ type Room struct {
 }
 
 var LesRooms []Room
-var AllPlayer[]Joueur
+var AllPlayer []Joueur
 var (
 	buttonColor  = "green"
 	clients      = make(map[*websocket.Conn]bool)
@@ -91,9 +91,9 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		uid = cookie.Value
 	}
-	println("uid : ",uid)
+	println("uid : ", uid)
 	pseudo = r.FormValue("pseudo")
-	
+
 	var joueur Joueur
 	joueur.Pseudo = pseudo
 	joueur.Uid = uid
@@ -106,12 +106,12 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	room.Couleur = buttonColor
 	room.Code = code
 	LesRooms = append(LesRooms, room)
-	
+
 	http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
-	
+
 	// cookie, err := r.Cookie("uid")
 	// if err != nil {
 	// 	value := ""
@@ -169,23 +169,22 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		println("erreur lors de l'envoie de l'uid")
 		return
 	}
-	joueurcurrent := Joueur {
+	joueurcurrent := Joueur{
 		Pseudo: "",
-		Uid: uid,
+		Uid:    uid,
 		Client: conn,
 	}
-	println("uid depart : ",uid)
+	println("on créer l'uid : ", uid)
 	var present = false
-	println(conn)
-	for _ , joueur := range AllPlayer {
-		println(joueur.Client)
-		if joueur.Client == conn || joueur.Uid == uid{
+	for _, joueur := range AllPlayer {
+		if joueur.Client == conn || joueur.Uid == uid {
 			present = true
 		}
 	}
 	if !present {
-		AllPlayer = append(AllPlayer, joueurcurrent )
-	} 
+		println("on ajoute l'uid : ",joueurcurrent.Uid)
+		AllPlayer = append(AllPlayer, joueurcurrent)
+	}
 
 	defer conn.Close()
 	clients[conn] = true
@@ -208,11 +207,11 @@ func handleMessages() {
 	for {
 		select {
 		case message := <-broadcast:
-			for _,room := range LesRooms {
-				if room.Code == strings.Split(string(message),"|")[2]{
+			for _, room := range LesRooms {
+				if room.Code == strings.Split(string(message), "|")[2] {
 					println("room trouvé !")
-					for _,client := range room.LesJoueurs {
-						println("message envoyé a : ",client.Uid)
+					for _, client := range room.LesJoueurs {
+						println("message envoyé a : ", client.Uid)
 						println(client.Client)
 						err := client.Client.WriteMessage(websocket.TextMessage, message)
 						if err != nil {
@@ -275,14 +274,15 @@ func Contains(liste []string, code string) bool {
 	return false
 }
 
-func GetClientByUid(uid string)*websocket.Conn{
-	println("nombre de gens co :",len(AllPlayer))
-	for _,joueur := range AllPlayer{
-		println("l'uid selec : ",uid," et l'uid du joueur : ",joueur.Uid)
+func GetClientByUid(uid string) *websocket.Conn {
+	println("nombre de gens co :", len(AllPlayer))
+	for _, joueur := range AllPlayer {
+		println("l'uid selec : ", uid, " et l'uid du joueur : ", joueur.Uid)
 		if joueur.Uid == uid {
 			return joueur.Client
 		}
 	}
 	var truc *websocket.Conn
+	println("getclientbyuid marche pas")
 	return truc
 }
