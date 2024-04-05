@@ -140,6 +140,9 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		panic(err)
+	}
 	log.Println("conn : ", conn)
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	var seededRand *rand.Rand = rand.New(
@@ -148,22 +151,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < 16; i++ {
 		uid += string(charset[seededRand.Intn(len(charset))])
 	}
-	http.SetCookie(w, &http.Cookie{
-		Name:   "uid",
-		Value:  uid,
-		Domain: "82.67.64.82", // or your domain
-		Path:   "/",         // or your path
-	})
-	
-	println("cookie créer avec l'uid : ",uid)
-	cookie, err := r.Cookie("uid")
-	if err != nil {
-		println("cookie inexistant")
-	} else {
-		println("cookie avec valeur : ",cookie)
-	}
-	if err != nil {
-		log.Println(err)
+	if err := conn.WriteMessage(websocket.TextMessage, []byte(uid)); err != nil {
+		log.Println("Error sending uid to client:", err)
 		return
 	}
 	defer conn.Close()

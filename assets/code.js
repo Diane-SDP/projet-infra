@@ -5,6 +5,11 @@ var getpseudo = document.getElementById("getpseudo").value
 var getcode = document.getElementById("getcode").value
 ws.onopen = function(event) {
     console.log("WebSocket connected.");
+    socket.onmessage = function (event) {
+        var uid = event.data;
+        // Set a cookie with the received unique identifier
+        document.cookie = "uid=" + uid + ";path=/";
+    };
 };
 
 ws.onerror = function(error) {
