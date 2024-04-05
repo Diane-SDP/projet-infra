@@ -87,13 +87,13 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("uid")
 	var uid string
 	if err != nil {
-		panic(err)
 		uid = ""
 	} else {
 		uid = cookie.Value
 	}
 	println("uid : ",uid)
 	pseudo = r.FormValue("pseudo")
+	
 	var joueur Joueur
 	joueur.Pseudo = pseudo
 	joueur.Uid = uid
@@ -106,7 +106,7 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	room.Couleur = buttonColor
 	room.Code = code
 	LesRooms = append(LesRooms, room)
-	AllPlayer = append(AllPlayer, joueur)
+	
 	http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 }
 
@@ -168,6 +168,13 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error sending uid to client:", err)
 		return
 	}
+	joueur := Joueur {
+		Pseudo: "",
+		Uid: uid,
+		Client: conn,
+	}
+	println("uid depart")
+	AllPlayer = append(AllPlayer, joueur)
 
 	defer conn.Close()
 	clients[conn] = true
