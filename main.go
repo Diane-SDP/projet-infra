@@ -109,12 +109,12 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
 	
-	cookie, err := r.Cookie("uid")
-	if err != nil {
-		println("cookie inexistant")
-	} else {
-		println("cookie avec valeur : ",cookie)
-	}
+	// cookie, err := r.Cookie("uid")
+	// if err != nil {
+	// 	value := ""
+	// } else {
+	// 	value := cookie.Value
+	// }
 	parts := strings.Split(r.URL.Path, "/")
 	code := parts[len(parts)-1]
 	if code == "" {
@@ -154,7 +154,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	log.Println("conn : ", conn)
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	var seededRand *rand.Rand = rand.New(
 		rand.NewSource(time.Now().UnixNano()))
@@ -199,25 +198,42 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 func handleMessages() {
 	for {
-		println("truc")
 		select {
 		case message := <-broadcast:
-			for client := range clients {
-
-				//on recupere le cookie
-				//on verifie si la salle qu'on a eu dans le message correspond au cookie code
-				//si oui on envoie le message
-				//si non on fait un petit print pour verifier (hassoul)
-				println("le message : ",strings.Split(string(message),"|")[2])
-
-
-				err := client.WriteMessage(websocket.TextMessage, message)
-				if err != nil {
-					log.Println("Error sending message to client:", err)
-					client.Close()
-					delete(clients, client)
+			for _,room := range LesRooms {
+				if room.Code == strings.Split(string(message),"|")[2]{
+					println("room trouvé !")
+					for _,client := range room.LesJoueurs {
+						println("message envoyé a : ",client.Uid)
+						err := client.Client.WriteMessage(websocket.TextMessage, message)
+						if err != nil {
+							log.Println("Error sending message to client:", err)
+							client.Client.Close()
+							delete(clients, client.Client)
+						}
+					}
 				}
 			}
+			// for client := range clients {
+
+			// 	//on recupere le cookie
+			// 	//on verifie si la salle qu'on a eu dans le message correspond au cookie code
+			// 	//si oui on envoie le message
+			// 	//si non on fait un petit print pour verifier (hassoul)
+			// 	println("le message : ",strings.Split(string(message),"|")[2])
+			// 	for _,room := range LesRooms {
+			// 		if room.Code == strings.Split(string(message),"|")[2]{
+
+			// 		}
+			// 	}
+
+			// 	err := client.WriteMessage(websocket.TextMessage, message)
+			// 	if err != nil {
+			// 		log.Println("Error sending message to client:", err)
+			// 		client.Close()
+			// 		delete(clients, client)
+			// 	}
+			// }
 		case client := <-addClient:
 			clients[client] = true
 		case client := <-removeClient:
