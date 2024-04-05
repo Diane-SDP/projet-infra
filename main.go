@@ -146,7 +146,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		Name:  "uid",
 		Value: uid,
 	})
-
+	println("cookie créer avec l'uid : ",uid)
 	if err != nil {
 		log.Println(err)
 		return
