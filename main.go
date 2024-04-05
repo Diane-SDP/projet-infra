@@ -273,6 +273,7 @@ func Contains(liste []string, code string) bool {
 
 func GetClientByUid(uid string)*websocket.Conn{
 	for _,joueur := range AllPlayer{
+		println("l'uid selec : ",uid," et l'uid du joueur : ",joueur.Uid)
 		if joueur.Uid == uid {
 			return joueur.Client
 		}
