@@ -149,9 +149,12 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		uid += string(charset[seededRand.Intn(len(charset))])
 	}
 	http.SetCookie(w, &http.Cookie{
-		Name:  "uid",
-		Value: uid,
+		Name:   "uid",
+		Value:  uid,
+		Domain: "82.67.64.82", // or your domain
+		Path:   "/",         // or your path
 	})
+	
 	println("cookie créer avec l'uid : ",uid)
 	cookie, err := r.Cookie("uid")
 	if err != nil {
