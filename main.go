@@ -175,6 +175,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	println("uid depart : ",uid)
 	var present = false
+	println(conn)
 	for _ , joueur := range AllPlayer {
 		println(joueur.Client)
 		if joueur.Client == conn{
