@@ -208,7 +208,7 @@ func handleMessages() {
 				//on verifie si la salle qu'on a eu dans le message correspond au cookie code
 				//si oui on envoie le message
 				//si non on fait un petit print pour verifier (hassoul)
-				println("le message : ",string(message))
+				println("le message : ",strings.Split(string(message),"|")[2])
 
 
 				err := client.WriteMessage(websocket.TextMessage, message)
