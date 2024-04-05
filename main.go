@@ -87,7 +87,7 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("uid")
 	var uid string
 	if err != nil {
-		uid = ""
+		panic(err)
 	} else {
 		uid = cookie.Value
 	}
@@ -164,8 +164,9 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < 16; i++ {
 		uid += string(charset[seededRand.Intn(len(charset))])
 	}
+	println("envoie de l'uid...")
 	if err := conn.WriteMessage(websocket.TextMessage, []byte(uid)); err != nil {
-		log.Println("Error sending uid to client:", err)
+		println("erreur lors de l'envoie de l'uid")
 		return
 	}
 	joueurcurrent := Joueur {
@@ -216,7 +217,6 @@ func handleMessages() {
 						err := client.Client.WriteMessage(websocket.TextMessage, message)
 						if err != nil {
 							panic(err)
-							log.Println("Error sending message to client:", err)
 							client.Client.Close()
 							delete(clients, client.Client)
 						}
