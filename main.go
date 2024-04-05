@@ -103,7 +103,7 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		println("cookie inexistant")
 	} else {
-		println("cookie avec valeur : ", cookie)
+		println("cookie avec valeur : ",cookie)
 	}
 	parts := strings.Split(r.URL.Path, "/")
 	code := parts[len(parts)-1]
@@ -158,12 +158,14 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error sending uid to client:", err)
 		return
 	}
+	
+	// joueur := Joueur{
+	// Uid: uid,
+	// Pseudo: "",
+	// Client: conn,
+	// }
 
-	joueur := Joueur{
-		Uid:    uid,
-		Pseudo: "",
-		Client: conn,
-	}
+
 
 	defer conn.Close()
 	log.Println("ouije pute")
