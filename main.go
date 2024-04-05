@@ -173,7 +173,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		Uid: uid,
 		Client: conn,
 	}
-	println("uid depart")
+	println("uid depart : ",uid)
 	AllPlayer = append(AllPlayer, joueur)
 
 	defer conn.Close()
