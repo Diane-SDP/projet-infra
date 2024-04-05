@@ -207,6 +207,7 @@ func handleMessages() {
 						println("message envoyé a : ",client.Uid)
 						err := client.Client.WriteMessage(websocket.TextMessage, message)
 						if err != nil {
+							panic(err)
 							log.Println("Error sending message to client:", err)
 							client.Client.Close()
 							delete(clients, client.Client)
