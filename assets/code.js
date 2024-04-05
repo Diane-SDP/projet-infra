@@ -23,11 +23,12 @@ function changeColor() {
 ws.onmessage = function(event) {
     var button = document.getElementById('colorButton');
     console.log("recup :",event.data)
-    if (event.data != "green" && event.data != "red") {
+    if (event.data.split("/")[0] != "green" && event.data.split("/")[0] != "red") {
         var uid = event.data;
         document.cookie = "uid=" + uid + ";path=/";
         console.log("cookie créer avec l'uid : ",uid)
     } else {
+        console.log("ça c'est une couleur : ")
         color.innerText = (event.data)
         button.style.backgroundColor = event.data;
     }
