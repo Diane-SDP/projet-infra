@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -17,7 +18,7 @@ var upgrader = websocket.Upgrader{
 }
 
 type Joueur struct {
-	Id     int
+	Uid     string
 	Pseudo string
 	Client map[*websocket.Conn]bool
 }
@@ -112,14 +113,6 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 		if code == "" {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
-		http.SetCookie(w, &http.Cookie{
-			Name:  "room",
-			Value: code,
-		})
-		http.SetCookie(w, &http.Cookie{
-			Name:  "pseudo",
-			Value: pseudo,
-		})
 		http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 	}
 	if !Contains(listGame, code) {
@@ -150,6 +143,18 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	log.Println("conn : ", conn)
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	var seededRand *rand.Rand = rand.New(
+		rand.NewSource(time.Now().UnixNano()))
+	var uid string
+	for i := 0; i < 16; i++ {
+		uid += string(charset[seededRand.Intn(len(charset))])
+	}
+	http.SetCookie(w, &http.Cookie{
+		Name:  "uid",
+		Value: uid,
+	})
+	
 	if err != nil {
 		log.Println(err)
 		return
@@ -177,6 +182,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 func handleMessages() {
 	for {
+		println("truc")
 		select {
 		case message := <-broadcast:
 			for client := range clients {
