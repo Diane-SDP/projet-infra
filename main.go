@@ -165,14 +165,19 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		uid += string(charset[seededRand.Intn(len(charset))])
 	}
 	println("envoie de l'uid...")
-
+	if err := conn.WriteMessage(websocket.TextMessage, []byte(uid)); err != nil {
+		println("erreur lors de l'envoie de l'uid")
+		return
+	}
 	joueurcurrent := Joueur{
 		Pseudo: "",
 		Uid:    uid,
 		Client: conn,
 	}
-	println("on créer l'uid : ", uid)
+	
+	println("on créer l'", uid)
 	var present = false
+	println(conn)
 	for _, joueur := range AllPlayer {
 		if joueur.Client == conn || joueur.Uid == uid {
 			present = true
@@ -180,10 +185,13 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if !present {
 		println("on ajoute l'uid : ",joueurcurrent.Uid)
-		http.SetCookie(w, &http.Cookie{
-			Name:  "uid",
-			Value: uid,
-		})
+		cookie, err := r.Cookie("uid")
+		if err != nil {
+			println("pas de cookies coco")
+		}
+		value := cookie.Value
+		println(value)
+		joueurcurrent.Uid = value
 		AllPlayer = append(AllPlayer, joueurcurrent)
 	}
 
