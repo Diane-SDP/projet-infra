@@ -194,7 +194,7 @@ func handleMessages() {
 				if room.Code == strings.Split(string(message),"|")[2]{
 					println("room trouvé !")
 					for _,client := range room.LesJoueurs {
-						println("message envoyé a : ",client.Pseudo)
+						println("message envoyé a : ",client.Uid)
 						err := client.Client.WriteMessage(websocket.TextMessage, message)
 						if err != nil {
 							panic(err)
@@ -258,6 +258,7 @@ func Contains(liste []string, code string) bool {
 }
 
 func GetClientByUid(uid string)*websocket.Conn{
+	println("nombre de gens co :",len(AllPlayer))
 	for _,joueur := range AllPlayer{
 		println("l'uid selec : ",uid," et l'uid du joueur : ",joueur.Uid)
 		if joueur.Uid == uid {
