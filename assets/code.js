@@ -23,7 +23,6 @@ function changeColor() {
 ws.onmessage = function(event) {
     var button = document.getElementById('colorButton');
     console.log("recup :",event.data)
-    console.log(event.data.split("/")[0])
     if (event.data.split("/")[0] != "green" && event.data.split("/")[0] != "red") {
         var uid = event.data;
         document.cookie = "uid=" + uid + ";path=/";

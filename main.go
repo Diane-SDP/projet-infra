@@ -20,7 +20,7 @@ var upgrader = websocket.Upgrader{
 type Joueur struct {
 	Uid    string
 	Pseudo string
-	Client map[*websocket.Conn]bool
+	Client *websocket.Conn
 }
 
 type Room struct {
@@ -97,11 +97,13 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
+	println("coucou game")
+
 	cookie, err := r.Cookie("uid")
 	if err != nil {
 		println("cookie inexistant")
 	} else {
-		println("cookie avec valeur : ",cookie)
+		println("cookie avec valeur : ", cookie)
 	}
 	parts := strings.Split(r.URL.Path, "/")
 	code := parts[len(parts)-1]
@@ -139,6 +141,7 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
+	println("coucou ws")
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		panic(err)
@@ -155,6 +158,13 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error sending uid to client:", err)
 		return
 	}
+
+	joueur := Joueur{
+		Uid:    uid,
+		Pseudo: "",
+		Client: conn,
+	}
+
 	defer conn.Close()
 	log.Println("ouije pute")
 	clients[conn] = true
