@@ -25,7 +25,7 @@ ws.onmessage = function(event) {
     console.log("recup :",event.data)
     if (event.data.split("|")[0] != "green" && event.data.split("|")[0] != "red") {
         var cookie = getCookie("uid")
-        if (myCookie == null) {
+        if (cookie == null) {
             var uid = event.data;
             document.cookie = "uid=" + uid + ";path=/";
             console.log("cookie créer avec l'uid : ",uid)
