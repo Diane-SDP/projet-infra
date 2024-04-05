@@ -180,10 +180,10 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if !present {
 		println("on ajoute l'uid : ",joueurcurrent.Uid)
-		if err := conn.WriteMessage(websocket.TextMessage, []byte(uid)); err != nil {
-			println("erreur lors de l'envoie de l'uid")
-			return
-		}
+		http.SetCookie(w, &http.Cookie{
+			Name:  "uid",
+			Value: uid,
+		})
 		AllPlayer = append(AllPlayer, joueurcurrent)
 	}
 
