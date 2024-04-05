@@ -174,7 +174,15 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		Client: conn,
 	}
 	println("uid depart : ",uid)
-	AllPlayer = append(AllPlayer, joueur)
+	var present = false
+	for _ , joueur := range AllPlayer {
+		if joueur.Client == conn{
+			present = true
+		}
+	}
+	if !present {
+		AllPlayer = append(AllPlayer, joueur)
+	} 
 
 	defer conn.Close()
 	clients[conn] = true
