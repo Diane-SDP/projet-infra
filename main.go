@@ -18,7 +18,7 @@ var upgrader = websocket.Upgrader{
 }
 
 type Joueur struct {
-	Uid     string
+	Uid    string
 	Pseudo string
 	Client map[*websocket.Conn]bool
 }
@@ -93,14 +93,6 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	room.Couleur = buttonColor
 	room.Code = code
 	LesRooms = append(LesRooms, room)
-	http.SetCookie(w, &http.Cookie{
-		Name:  "room",
-		Value: code,
-	})
-	http.SetCookie(w, &http.Cookie{
-		Name:  "pseudo",
-		Value: pseudo,
-	})
 	http.Redirect(w, r, "/game/"+code, http.StatusSeeOther)
 }
 
@@ -154,7 +146,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		Name:  "uid",
 		Value: uid,
 	})
-	
+
 	if err != nil {
 		log.Println(err)
 		return
@@ -186,10 +178,10 @@ func handleMessages() {
 		select {
 		case message := <-broadcast:
 			for client := range clients {
-				
+
 				//on recupere le cookie
-				//on verifie si la salle qu'on a eu dans le message correspond au cookie code 
-				//si oui on envoie le message 
+				//on verifie si la salle qu'on a eu dans le message correspond au cookie code
+				//si oui on envoie le message
 				//si non on fait un petit print pour verifier (hassoul)
 				err := client.WriteMessage(websocket.TextMessage, message)
 				if err != nil {
