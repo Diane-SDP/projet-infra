@@ -92,7 +92,7 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		uid = cookie.Value
 	}
-
+	println("uid : ",uid)
 	pseudo = r.FormValue("pseudo")
 	var joueur Joueur
 	joueur.Pseudo = pseudo
