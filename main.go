@@ -100,7 +100,6 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("uid")
 	if err != nil {
 		println("cookie inexistant")
-		panic(err)
 	} else {
 		println("cookie avec valeur : ",cookie)
 	}
