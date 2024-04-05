@@ -98,6 +98,7 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	joueur.Pseudo = pseudo
 	joueur.Uid = uid
 	joueur.Client = GetClientByUid(uid)
+	println(joueur.Client)
 
 	var room Room
 	room.LesJoueurs = append(room.LesJoueurs, joueur)
