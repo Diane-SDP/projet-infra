@@ -212,6 +212,7 @@ func handleMessages() {
 					println("room trouvé !")
 					for _,client := range room.LesJoueurs {
 						println("message envoyé a : ",client.Uid)
+						println(client.Client)
 						err := client.Client.WriteMessage(websocket.TextMessage, message)
 						if err != nil {
 							panic(err)
