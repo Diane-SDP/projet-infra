@@ -168,7 +168,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error sending uid to client:", err)
 		return
 	}
-	joueur := Joueur {
+	joueurcurrent := Joueur {
 		Pseudo: "",
 		Uid: uid,
 		Client: conn,
@@ -178,12 +178,12 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	println(conn)
 	for _ , joueur := range AllPlayer {
 		println(joueur.Client)
-		if joueur.Client == conn{
+		if joueur.Client == conn || joueur.Uid == uid{
 			present = true
 		}
 	}
 	if !present {
-		AllPlayer = append(AllPlayer, joueur)
+		AllPlayer = append(AllPlayer, joueurcurrent )
 	} 
 
 	defer conn.Close()
