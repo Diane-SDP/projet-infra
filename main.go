@@ -31,7 +31,7 @@ type Room struct {
 }
 
 var LesRooms []Room
-
+var AllPlayer[]Joueur
 var (
 	buttonColor  = "green"
 	clients      = make(map[*websocket.Conn]bool)
@@ -84,9 +84,20 @@ func notfoundHandler(w http.ResponseWriter, r *http.Request) {
 func createHandler(w http.ResponseWriter, r *http.Request) {
 	code := CodeGene()
 	listGame = append(listGame, code)
+	cookie, err := r.Cookie("uid")
+	var uid string
+	if err != nil {
+		uid = ""
+	} else {
+		uid = cookie.Value
+	}
+
 	pseudo = r.FormValue("pseudo")
 	var joueur Joueur
 	joueur.Pseudo = pseudo
+	joueur.Uid = uid
+	joueur.Client = GetClientByUid(uid)
+
 	var room Room
 	room.LesJoueurs = append(room.LesJoueurs, joueur)
 	room.BroadCast = make(chan []byte)
@@ -97,8 +108,7 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
-	println("coucou game")
-
+	
 	cookie, err := r.Cookie("uid")
 	if err != nil {
 		println("cookie inexistant")
@@ -127,7 +137,6 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 	data.Pseudo = pseudo
 	data.Color = buttonColor
 	data.Code = code
-
 	tmpl, err := template.ParseFiles("index.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -141,7 +150,6 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	println("coucou ws")
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		panic(err)
@@ -158,13 +166,14 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error sending uid to client:", err)
 		return
 	}
-	
-	// joueur := Joueur{
-	// Uid: uid,
-	// Pseudo: "",
-	// Client: conn,
-	// }
 
+
+	joueur := Joueur{
+	Uid: uid,
+	Pseudo: "",
+	Client: conn,
+	}
+	AllPlayer = append(AllPlayer, joueur)
 
 
 	defer conn.Close()
@@ -238,4 +247,14 @@ func Contains(liste []string, code string) bool {
 		}
 	}
 	return false
+}
+
+func GetClientByUid(uid string)*websocket.Conn{
+	for _,joueur := range AllPlayer{
+		if joueur.Uid == uid {
+			return joueur.Client
+		}
+	}
+	var truc *websocket.Conn
+	return truc
 }
