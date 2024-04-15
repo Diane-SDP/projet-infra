@@ -56,6 +56,7 @@ func main() {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
+	println("home")
 	tmpl, err := template.ParseFiles("home.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
